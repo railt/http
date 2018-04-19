@@ -26,7 +26,7 @@ abstract class TestCase extends BaseTestCase
     {
         $request = $this->request('{"query": "some"}');
 
-        $this->assertNotEquals('{}', $request->getQuery());
+        $this->assertNotSame('{}', $request->getQuery());
     }
 
     /**
@@ -45,7 +45,7 @@ abstract class TestCase extends BaseTestCase
     {
         $request = $this->request('{"query": "some"}', false);
 
-        $this->assertEquals('{}', $request->getQuery());
+        $this->assertSame('{}', $request->getQuery());
     }
 
     /**
@@ -58,7 +58,7 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request('{"query": "' . $expected . '"}');
 
-        $this->assertEquals($expected, $request->getQuery());
+        $this->assertSame($expected, $request->getQuery());
     }
 
     /**
@@ -70,7 +70,7 @@ abstract class TestCase extends BaseTestCase
     {
         $request = $this->request('');
 
-        $this->assertEquals('{}', $request->getQuery());
+        $this->assertSame('{}', $request->getQuery());
     }
 
     /**
@@ -106,7 +106,7 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request('{"variables": "' . $expected[0] . '"}');
 
-        $this->assertEquals($expected, $request->getVariables());
+        $this->assertSame($expected, $request->getVariables());
     }
 
     /**
@@ -119,7 +119,7 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request('{"operationName": "' . $expected . '"}');
 
-        $this->assertEquals($expected, $request->getOperation());
+        $this->assertSame($expected, $request->getOperation());
     }
 
     /**
@@ -140,9 +140,9 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request($data);
 
-        $this->assertEquals($query, $request->getQuery());
-        $this->assertEquals($variables, $request->getVariables());
-        $this->assertEquals($operation, $request->getOperation());
+        $this->assertSame($query, $request->getQuery());
+        $this->assertSame($variables, $request->getVariables());
+        $this->assertSame($operation, $request->getOperation());
     }
 
     /**
@@ -163,9 +163,9 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request('', false);
 
-        $this->assertEquals($query, $request->getQuery());
-        $this->assertEquals($variables, $request->getVariables());
-        $this->assertEquals($operation, $request->getOperation());
+        $this->assertSame($query, $request->getQuery());
+        $this->assertSame($variables, $request->getVariables());
+        $this->assertSame($operation, $request->getOperation());
     }
 
     /**
@@ -186,9 +186,9 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request('', false);
 
-        $this->assertEquals($query, $request->getQuery());
-        $this->assertEquals($variables, $request->getVariables());
-        $this->assertEquals($operation, $request->getOperation());
+        $this->assertSame($query, $request->getQuery());
+        $this->assertSame($variables, $request->getVariables());
+        $this->assertSame($operation, $request->getOperation());
     }
 
     /**
@@ -215,9 +215,9 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request('', false);
 
-        $this->assertEquals($query, $request->getQuery());
-        $this->assertEquals($variables, $request->getVariables());
-        $this->assertEquals($operation, $request->getOperation());
+        $this->assertSame($query, $request->getQuery());
+        $this->assertSame($variables, $request->getVariables());
+        $this->assertSame($operation, $request->getOperation());
     }
 
     /**
@@ -244,9 +244,9 @@ abstract class TestCase extends BaseTestCase
 
         $request = $this->request($data);
 
-        $this->assertEquals($query, $request->getQuery());
-        $this->assertEquals($variables, $request->getVariables());
-        $this->assertEquals($operation, $request->getOperation());
+        $this->assertSame($query, $request->getQuery());
+        $this->assertSame($variables, $request->getVariables());
+        $this->assertSame($operation, $request->getOperation());
     }
 
     /**
@@ -278,8 +278,8 @@ abstract class TestCase extends BaseTestCase
             ->setVariablesArgument($variablesArgument)
             ->setOperationArgument($operationArgument);
 
-        $this->assertEquals($query, $request->getQuery());
-        $this->assertEquals($variables, $request->getVariables());
-        $this->assertEquals($operation, $request->getOperation());
+        $this->assertSame($query, $request->getQuery());
+        $this->assertSame($variables, $request->getVariables());
+        $this->assertSame($operation, $request->getOperation());
     }
 }
