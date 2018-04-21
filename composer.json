@@ -3,7 +3,14 @@
     "type": "library",
     "description": "The Railt HTTP component provides objects to build GraphQL requests from the client.",
     "license": "MIT",
-    "keywords": ["http", "http response", "response", "http request", "request", "graphql"],
+    "keywords": [
+        "http",
+        "http response",
+        "response",
+        "http request",
+        "request",
+        "graphql"
+    ],
     "homepage": "http://railt.org",
     "support": {
         "issues": "https://github.com/railt/railt/issues",
