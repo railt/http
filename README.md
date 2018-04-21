@@ -7,7 +7,7 @@
     <a href="https://styleci.io/repos/101227474?branch=master"><img src="https://styleci.io/repos/101227474/shield?b=master" alt="StyleCI" /></a>
     <a href="https://packagist.org/packages/railt/http"><img src="https://poser.pugx.org/railt/http/version" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/railt/http"><img src="https://poser.pugx.org/railt/http/v/unstable" alt="Latest Unstable Version"></a>
-    <a href="https://raw.githubusercontent.com/railt/http/master/LICENSE"><img src="https://poser.pugx.org/railt/http/license" alt="License MIT"></a>
+    <a href="https://raw.githubusercontent.com/railt/http/master/LICENSE.md"><img src="https://poser.pugx.org/railt/http/license" alt="License MIT"></a>
 </p>
 
 # Http
