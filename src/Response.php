@@ -175,7 +175,6 @@ class Response implements ResponseInterface
 
     /**
      * @return array
-     * @throws \LogicException
      */
     public function toArray(): array
     {
