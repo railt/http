@@ -9,20 +9,20 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Renderable;
-
 /**
  * Interface ResponseInterface
  */
-interface ResponseInterface extends Arrayable, Renderable
+interface ResponseInterface extends MessageInterface, \JsonSerializable
 {
     /**
-     * ResponseInterface constructor.
-     * @param array $data
-     * @param array $errors
+     * @var string Positive status code
      */
-    public function __construct(array $data, array $errors = []);
+    public const STATUS_CODE_SUCCESS = 200;
+
+    /**
+     * @var string Negative status code
+     */
+    public const STATUS_CODE_ERROR = 500;
 
     /**
      * @return int
@@ -30,19 +30,15 @@ interface ResponseInterface extends Arrayable, Renderable
     public function getStatusCode(): int;
 
     /**
-     * @return array
+     * @param MessageInterface $message
+     * @return ResponseInterface
      */
-    public function getData(): array;
+    public function addMessage(MessageInterface $message): ResponseInterface;
 
     /**
-     * @return array[]
+     * @return string
      */
-    public function getErrors(): array;
-
-    /**
-     * @return \Traversable|\Throwable[]
-     */
-    public function getExceptions(): iterable;
+    public function render(): string;
 
     /**
      * @return void
@@ -52,10 +48,5 @@ interface ResponseInterface extends Arrayable, Renderable
     /**
      * @return bool
      */
-    public function isSuccessful(): bool;
-
-    /**
-     * @return bool
-     */
-    public function hasErrors(): bool;
+    public function isBatched(): bool;
 }

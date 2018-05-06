@@ -9,51 +9,32 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
+use Railt\Http\Provider\ProviderInterface;
+
 /**
  * Interface RequestInterface
  */
-interface RequestInterface
+interface RequestInterface extends ProviderInterface, QueryInterface, \IteratorAggregate
 {
     /**
-     * Query http (GET/POST) argument name passed by default
+     * @param ProviderInterface $provider
+     * @return RequestInterface
      */
-    public const DEFAULT_QUERY_ARGUMENT = 'query';
+    public function addProvider(ProviderInterface $provider): RequestInterface;
 
     /**
-     * Variables http (GET/POST) argument name passed by default
+     * @param QueryInterface $query
+     * @return RequestInterface
      */
-    public const DEFAULT_VARIABLES_ARGUMENT = 'variables';
+    public function addQuery(QueryInterface $query): RequestInterface;
 
     /**
-     * Operation http (GET/POST) argument name passed by default
+     * @return QueryInterface
      */
-    public const DEFAULT_OPERATION_ARGUMENT = 'operationName';
+    public function first(): QueryInterface;
 
     /**
-     * @return string
-     */
-    public function getQuery(): string;
-
-    /**
-     * @return array
-     */
-    public function getVariables(): array;
-
-    /**
-     * @return null|string
-     */
-    public function getOperation(): ?string;
-
-    /**
-     * @param string $field
-     * @param null $default
-     * @return mixed
-     */
-    public function get(string $field, $default = null);
-
-    /**
-     * @param string $field
      * @return bool
      */
-    public function has(string $field): bool;
+    public function isBatched(): bool;
 }

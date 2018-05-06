@@ -7,20 +7,18 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Http\Exception\Extension;
 
 /**
- * Interface GraphQLLocation
+ * Class Extension
  */
-interface GraphQLExceptionLocation
+abstract class Extension implements ExtensionInterface
 {
     /**
-     * @return int
+     * @return array
      */
-    public function getLine(): int;
-
-    /**
-     * @return int
-     */
-    public function getColumn(): int;
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
 }

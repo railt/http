@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\SDL\Contracts\Dependent\FieldDefinition;
-
 /**
  * Interface InputInterface
  */
@@ -52,9 +50,12 @@ interface InputInterface
     public function getFieldName(): string;
 
     /**
-     * @return FieldDefinition
+     * Note: The return value may be different from the specified
+     * value. It all depends on what SDL parser you use.
+     *
+     * @return \Railt\SDL\Contracts\Dependent\FieldDefinition
      */
-    public function getFieldDefinition(): FieldDefinition;
+    public function getFieldDefinition();
 
     /**
      * @return string

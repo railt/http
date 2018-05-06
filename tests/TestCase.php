@@ -10,276 +10,231 @@ declare(strict_types=1);
 namespace Railt\Tests\Http;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Railt\Http\Provider\ProviderInterface;
+use Railt\Http\Request;
 use Railt\Http\RequestInterface;
-use Railt\Http\Support\ConfigurableRequest;
 
 /**
  * Class TestCase
  */
 abstract class TestCase extends BaseTestCase
 {
-    /**
-     * @throws \PHPUnit\Framework\Exception
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     */
-    public function testJsonIsReadable(): void
-    {
-        $request = $this->request('{"query": "some"}');
+    private const JSON_OPTIONS =
+        \JSON_HEX_TAG | \JSON_HEX_APOS | \JSON_HEX_AMP | \JSON_HEX_QUOT | \JSON_PRETTY_PRINT |
+        \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_PRESERVE_ZERO_FRACTION;
 
-        $this->assertNotSame('{}', $request->getQuery());
+    /**
+     * @return iterable|array[]
+     */
+    public function requestsDataProvider(): iterable
+    {
+        $providers = function () {
+            yield function (array $data = []) {
+                return new Request($this->provider($data));
+            };
+
+            yield function (array $data = []) {
+                return new Request($this->provider([], $data));
+            };
+
+            yield function (array $data = []) {
+                $json = \json_encode($data, self::JSON_OPTIONS);
+
+                return new Request($this->provider([], [], $json));
+            };
+        };
+
+        $result = [];
+
+        foreach ($providers() as $provider) {
+            $result[] = [$provider];
+        }
+
+        return $result;
     }
 
     /**
+     * @param array $query
+     * @param array $request
      * @param string $body
-     * @param bool $makeJson
-     * @return RequestInterface
+     * @return ProviderInterface
      */
-    abstract protected function request(string $body, bool $makeJson = true): RequestInterface;
+    abstract protected function provider(array $query = [], array $request = [], string $body = ''): ProviderInterface;
 
     /**
-     * @return void
+     * @dataProvider requestsDataProvider
+     *
+     * @param \Closure $provider
+     * @throws \PHPUnit\Framework\AssertionFailedError
      * @throws \PHPUnit\Framework\Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testJsonIsNotReadable(): void
+    public function testBasicQuery(\Closure $provider): void
     {
-        $request = $this->request('{"query": "some"}', false);
+        /** @var RequestInterface $request */
+        $request = $provider(['query' => '{}']);
 
-        $this->assertSame('{}', $request->getQuery());
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    public function testQueryIsReadable(): void
-    {
-        $expected = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-
-        $request = $this->request('{"query": "' . $expected . '"}');
-
-        $this->assertSame($expected, $request->getQuery());
-    }
-
-    /**
-     * @return void
-     * @throws \PHPUnit\Framework\Exception
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     */
-    public function testQueryDefaultValue(): void
-    {
-        $request = $this->request('');
-
-        $this->assertSame('{}', $request->getQuery());
-    }
-
-    /**
-     * @return void
-     * @throws \PHPUnit\Framework\Exception
-     * @throws \PHPUnit\Framework\ExpectationFailedException
-     */
-    public function testVariablesDefaultValue(): void
-    {
-        $request = $this->request('');
-
+        $this->assertEquals('{}', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
+        $this->assertNull($request->getOperationName());
+
+        $this->assertCount(1, $request->getQueries());
+        $this->assertFalse($request->isBatched());
     }
 
     /**
-     * @return void
+     * @dataProvider requestsDataProvider
+     *
+     * @param \Closure $provider
+     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \PHPUnit\Framework\Exception
      * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testOperationDefaultValue(): void
+    public function testNoQueries(\Closure $provider): void
     {
-        $request = $this->request('');
+        /** @var RequestInterface $request */
+        $request = $provider();
 
-        $this->assertNull($request->getOperation());
+        $this->assertEquals('', $request->getQuery());
+        $this->assertCount(0, $request->getVariables());
+        $this->assertNull($request->getOperationName());
+
+        $this->assertCount(1, $request->getQueries());
+        $this->assertFalse($request->isBatched());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @dataProvider requestsDataProvider
+     *
+     * @param \Closure $provider
+     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testVariablesIsReadable(): void
+    public function testVariablesWithoutQuery(\Closure $provider): void
     {
-        $expected = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
+        /** @var RequestInterface $request */
+        $request = $provider(['variables' => ['a' => 23, 'b' => 42]]);
 
-        $request = $this->request('{"variables": "' . $expected[0] . '"}');
+        $this->assertEquals('', $request->getQuery());
+        $this->assertCount(0, $request->getVariables());
+        $this->assertNull($request->getOperationName());
 
-        $this->assertSame($expected, $request->getVariables());
+        $this->assertCount(1, $request->getQueries());
+        $this->assertFalse($request->isBatched());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @dataProvider requestsDataProvider
+     *
+     * @param \Closure $provider
+     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testOperationIsReadable(): void
+    public function testArrayVariables(\Closure $provider): void
     {
-        $expected = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+        /** @var RequestInterface $request */
+        $request = $provider(['query' => '', 'variables' => ['a' => 23, 'b' => 42]]);
 
-        $request = $this->request('{"operationName": "' . $expected . '"}');
+        $this->assertEquals('', $request->getQuery());
+        $this->assertCount(2, $request->getVariables());
+        $this->assertEquals(23, $request->getVariable('a'));
+        $this->assertEquals(42, $request->getVariable('b'));
+        $this->assertNull($request->getOperationName());
 
-        $this->assertSame($expected, $request->getOperation());
+        $this->assertCount(1, $request->getQueries());
+        $this->assertFalse($request->isBatched());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @dataProvider requestsDataProvider
+     *
+     * @param \Closure $provider
+     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testAllDataIsReadable(): void
+    public function testJsonVariables(\Closure $provider): void
     {
-        $query     = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $variables = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
-        $operation = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+        /** @var RequestInterface $request */
+        $request = $provider(['query' => '', 'variables' => '{"a": 23, "b": 42}']);
 
-        $data = \json_encode([
-            'query'         => $query,
-            'variables'     => $variables,
-            'operationName' => $operation,
-        ]);
+        $this->assertEquals('', $request->getQuery());
+        $this->assertCount(2, $request->getVariables());
+        $this->assertEquals(23, $request->getVariable('a'));
+        $this->assertEquals(42, $request->getVariable('b'));
+        $this->assertNull($request->getOperationName());
 
-        $request = $this->request($data);
-
-        $this->assertSame($query, $request->getQuery());
-        $this->assertSame($variables, $request->getVariables());
-        $this->assertSame($operation, $request->getOperation());
+        $this->assertCount(1, $request->getQueries());
+        $this->assertFalse($request->isBatched());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @dataProvider requestsDataProvider
+     *
+     * @param \Closure $provider
+     * @throws \PHPUnit\Framework\AssertionFailedError
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testPostIsReadable(): void
+    public function testCorruptedVariables(\Closure $provider): void
     {
-        $query     = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $variables = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
-        $operation = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+        /** @var RequestInterface $request */
+        $request = $provider(['query' => 'query A {}', 'variables' => '{a:23,b:42}']); // Bad JSON
 
-        $_POST = [
-            'query'         => $query,
-            'variables'     => $variables,
-            'operationName' => $operation,
-        ];
+        $this->assertEquals('query A {}', $request->getQuery());
+        $this->assertCount(0, $request->getVariables());
+        $this->assertNull($request->getOperationName());
 
-        $request = $this->request('', false);
-
-        $this->assertSame($query, $request->getQuery());
-        $this->assertSame($variables, $request->getVariables());
-        $this->assertSame($operation, $request->getOperation());
+        $this->assertCount(1, $request->getQueries());
+        $this->assertFalse($request->isBatched());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testGetIsReadable(): void
+    public function testBadJsonQuery(): void
     {
-        $query     = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $variables = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
-        $operation = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+        $request = new Request($this->provider([], [], '{query: ...}'));
 
-        $_GET = [
-            'query'         => $query,
-            'variables'     => $variables,
-            'operationName' => $operation,
-        ];
-
-        $request = $this->request('', false);
-
-        $this->assertSame($query, $request->getQuery());
-        $this->assertSame($variables, $request->getVariables());
-        $this->assertSame($operation, $request->getOperation());
+        $this->assertEquals('', $request->getQuery());
+        $this->assertCount(0, $request->getVariables());
+        $this->assertNull($request->getOperationName());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testGetHasLowerPriorityThanPost(): void
+    public function testJsonHasAHigherPriority(): void
     {
-        $query     = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $variables = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
-        $operation = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+        $request = new Request($this->provider([
+            'query'         => 'query DATA {}',
+            'variables'     => ['some' => 23],
+            'operationName' => 'data',
+        ], [], '{"query": "query JSON {}", "operationName": "json"}'));
 
-        $_POST = [
-            'query'         => $query,
-            'variables'     => $variables,
-            'operationName' => $operation,
-        ];
-
-        $_GET = [
-            'query'         => (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX),
-            'variables'     => (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX),
-            'operationName' => (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX),
-        ];
-
-        $request = $this->request('', false);
-
-        $this->assertSame($query, $request->getQuery());
-        $this->assertSame($variables, $request->getVariables());
-        $this->assertSame($operation, $request->getOperation());
+        $this->assertEquals('query JSON {}', $request->getQuery());
+        $this->assertCount(0, $request->getVariables());
+        $this->assertEquals('json', $request->getOperationName());
     }
 
     /**
-     * @return void
-     * @throws \Exception
+     * @throws \PHPUnit\Framework\Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
      */
-    public function testRawDataHasLowerPriorityThanJsonRequest(): void
+    public function testBadJsonHasAHigherPriority(): void
     {
-        $query     = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $variables = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
-        $operation = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
+        $request = new Request($this->provider([
+            'query'         => 'query DATA {}',
+            'variables'     => ['some' => 23],
+            'operationName' => 'data',
+        ], [], 'BAD JSON'));
 
-        $data = \json_encode([
-            'query'         => $query,
-            'variables'     => $variables,
-            'operationName' => $operation,
-        ]);
-
-        $_GET = $_POST = $_REQUEST = $HTTP_GET_VARS = $HTTP_POST_VARS = $HTTP_RAW_POST_DATA = [
-            'query'         => (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX),
-            'variables'     => (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX),
-            'operationName' => (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX),
-        ];
-
-        $request = $this->request($data);
-
-        $this->assertSame($query, $request->getQuery());
-        $this->assertSame($variables, $request->getVariables());
-        $this->assertSame($operation, $request->getOperation());
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    public function testConfigurableRequest(): void
-    {
-        $query         = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $queryArgument = '_' . (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-
-        $variables         = [(string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX)];
-        $variablesArgument = '_' . (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-
-        $operation         = (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-        $operationArgument = '_' . (string)\random_int(\PHP_INT_MIN, \PHP_INT_MAX);
-
-        $data = \json_encode([
-            $queryArgument     => $query,
-            $variablesArgument => $variables,
-            $operationArgument => $operation,
-        ]);
-
-        /** @var ConfigurableRequest|RequestInterface $request */
-        $request = $this->request($data);
-
-        $request
-            ->setQueryArgument($queryArgument)
-            ->setVariablesArgument($variablesArgument)
-            ->setOperationArgument($operationArgument);
-
-        $this->assertSame($query, $request->getQuery());
-        $this->assertSame($variables, $request->getVariables());
-        $this->assertSame($operation, $request->getOperation());
+        $this->assertEquals('', $request->getQuery());
+        $this->assertCount(0, $request->getVariables());
+        $this->assertNull($request->getOperationName());
     }
 }
