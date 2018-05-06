@@ -20,13 +20,13 @@ interface RequestInterface extends ProviderInterface, QueryInterface, \IteratorA
      * @param ProviderInterface $provider
      * @return RequestInterface
      */
-    public function addProvider(ProviderInterface $provider): RequestInterface;
+    public function addProvider(ProviderInterface $provider): self;
 
     /**
      * @param QueryInterface $query
      * @return RequestInterface
      */
-    public function addQuery(QueryInterface $query): RequestInterface;
+    public function addQuery(QueryInterface $query): self;
 
     /**
      * @return QueryInterface

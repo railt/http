@@ -22,7 +22,6 @@ class GlobalsProviderTestCase extends TestCase
      */
     public function setUp(): void
     {
-
     }
 
     /**
@@ -44,8 +43,7 @@ class GlobalsProviderTestCase extends TestCase
             \file_put_contents(MOCK_PHP_INPUT_STREAM, $body);
         }
 
-        return new class extends GlobalsProvider
-        {
+        return new class() extends GlobalsProvider {
             protected const PHP_INPUT_STREAM = MOCK_PHP_INPUT_STREAM;
         };
     }

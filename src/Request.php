@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\Http\Provider\GlobalsProvider;
-use Railt\Http\Provider\Provider;
 use Railt\Http\Provider\ProviderInterface;
 
 /**
@@ -40,7 +38,7 @@ class Request implements RequestInterface
     public function __construct($queryOrProvider = null)
     {
         $this->providers = new \SplStack();
-        $this->queries = new \SplStack();
+        $this->queries   = new \SplStack();
 
         $this->boot($queryOrProvider);
     }

@@ -60,5 +60,4 @@ class GraphQLExceptionLocation implements GraphQLExceptionLocationInterface
     {
         return $this->column;
     }
-
 }

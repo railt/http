@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Railt\Http\Provider;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class PsrHttpProvider

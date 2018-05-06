@@ -74,7 +74,7 @@ abstract class TestCase extends BaseTestCase
         /** @var RequestInterface $request */
         $request = $provider(['query' => '{}']);
 
-        $this->assertEquals('{}', $request->getQuery());
+        $this->assertSame('{}', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
         $this->assertNull($request->getOperationName());
 
@@ -95,7 +95,7 @@ abstract class TestCase extends BaseTestCase
         /** @var RequestInterface $request */
         $request = $provider();
 
-        $this->assertEquals('', $request->getQuery());
+        $this->assertSame('', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
         $this->assertNull($request->getOperationName());
 
@@ -116,7 +116,7 @@ abstract class TestCase extends BaseTestCase
         /** @var RequestInterface $request */
         $request = $provider(['variables' => ['a' => 23, 'b' => 42]]);
 
-        $this->assertEquals('', $request->getQuery());
+        $this->assertSame('', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
         $this->assertNull($request->getOperationName());
 
@@ -137,10 +137,10 @@ abstract class TestCase extends BaseTestCase
         /** @var RequestInterface $request */
         $request = $provider(['query' => '', 'variables' => ['a' => 23, 'b' => 42]]);
 
-        $this->assertEquals('', $request->getQuery());
+        $this->assertSame('', $request->getQuery());
         $this->assertCount(2, $request->getVariables());
-        $this->assertEquals(23, $request->getVariable('a'));
-        $this->assertEquals(42, $request->getVariable('b'));
+        $this->assertSame(23, $request->getVariable('a'));
+        $this->assertSame(42, $request->getVariable('b'));
         $this->assertNull($request->getOperationName());
 
         $this->assertCount(1, $request->getQueries());
@@ -160,10 +160,10 @@ abstract class TestCase extends BaseTestCase
         /** @var RequestInterface $request */
         $request = $provider(['query' => '', 'variables' => '{"a": 23, "b": 42}']);
 
-        $this->assertEquals('', $request->getQuery());
+        $this->assertSame('', $request->getQuery());
         $this->assertCount(2, $request->getVariables());
-        $this->assertEquals(23, $request->getVariable('a'));
-        $this->assertEquals(42, $request->getVariable('b'));
+        $this->assertSame(23, $request->getVariable('a'));
+        $this->assertSame(42, $request->getVariable('b'));
         $this->assertNull($request->getOperationName());
 
         $this->assertCount(1, $request->getQueries());
@@ -183,7 +183,7 @@ abstract class TestCase extends BaseTestCase
         /** @var RequestInterface $request */
         $request = $provider(['query' => 'query A {}', 'variables' => '{a:23,b:42}']); // Bad JSON
 
-        $this->assertEquals('query A {}', $request->getQuery());
+        $this->assertSame('query A {}', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
         $this->assertNull($request->getOperationName());
 
@@ -199,7 +199,7 @@ abstract class TestCase extends BaseTestCase
     {
         $request = new Request($this->provider([], [], '{query: ...}'));
 
-        $this->assertEquals('', $request->getQuery());
+        $this->assertSame('', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
         $this->assertNull($request->getOperationName());
     }
@@ -216,9 +216,9 @@ abstract class TestCase extends BaseTestCase
             'operationName' => 'data',
         ], [], '{"query": "query JSON {}", "operationName": "json"}'));
 
-        $this->assertEquals('query JSON {}', $request->getQuery());
+        $this->assertSame('query JSON {}', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
-        $this->assertEquals('json', $request->getOperationName());
+        $this->assertSame('json', $request->getOperationName());
     }
 
     /**
@@ -233,7 +233,7 @@ abstract class TestCase extends BaseTestCase
             'operationName' => 'data',
         ], [], 'BAD JSON'));
 
-        $this->assertEquals('', $request->getQuery());
+        $this->assertSame('', $request->getQuery());
         $this->assertCount(0, $request->getVariables());
         $this->assertNull($request->getOperationName());
     }

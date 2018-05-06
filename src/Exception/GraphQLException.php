@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 namespace Railt\Http\Exception;
+
 use Railt\Http\Exception\Extension\ExtensionInterface;
 
 /**
@@ -15,9 +16,9 @@ use Railt\Http\Exception\Extension\ExtensionInterface;
  */
 class GraphQLException extends \LogicException implements GraphQLExceptionInterface
 {
-    public const JSON_PATH_KEY = 'path';
-    public const JSON_MESSAGE_KEY = 'message';
-    public const JSON_LOCATIONS_KEY = 'locations';
+    public const JSON_PATH_KEY       = 'path';
+    public const JSON_MESSAGE_KEY    = 'message';
+    public const JSON_LOCATIONS_KEY  = 'locations';
     public const JSON_EXTENSIONS_KEY = 'extensions';
 
     /**
@@ -90,7 +91,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param iterable|GraphQLExceptionLocationInterface[] $locations
      * @return $this|GraphQLException
      */
-    public function setLocations(iterable $locations): GraphQLException
+    public function setLocations(iterable $locations): self
     {
         $this->locations = [];
 
@@ -129,7 +130,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param iterable|ExtensionInterface[] $extensions
      * @return $this|GraphQLException
      */
-    public function setExtensions(iterable $extensions): GraphQLException
+    public function setExtensions(iterable $extensions): self
     {
         $this->extensions = [];
 
@@ -154,7 +155,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param ExtensionInterface $value
      * @return $this|GraphQLException
      */
-    public function addExtension($key, ExtensionInterface $value): GraphQLException
+    public function addExtension($key, ExtensionInterface $value): self
     {
         \assert(\is_scalar($key) && $key, 'Extension key should be a non-null scalar');
 
@@ -167,7 +168,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param GraphQLExceptionLocationInterface $location
      * @return $this|GraphQLException
      */
-    public function addLocation(GraphQLExceptionLocationInterface $location): GraphQLException
+    public function addLocation(GraphQLExceptionLocationInterface $location): self
     {
         $this->locations[] = $location;
 
@@ -177,7 +178,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
     /**
      * @return $this|GraphQLException
      */
-    public function makePublic(): GraphQLException
+    public function makePublic(): self
     {
         $this->public = true;
 
@@ -187,7 +188,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
     /**
      * @return $this|GraphQLException
      */
-    public function makePrivate(): GraphQLException
+    public function makePrivate(): self
     {
         $this->public = false;
 
@@ -198,7 +199,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param iterable|string[]|int[] $chunks
      * @return $this|GraphQLException
      */
-    public function setPaths(iterable $chunks): GraphQLException
+    public function setPaths(iterable $chunks): self
     {
         $this->path = [];
 
@@ -213,7 +214,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param string|int $chunk
      * @return $this|GraphQLException
      */
-    public function addPath($chunk): GraphQLException
+    public function addPath($chunk): self
     {
         \assert(\is_string($chunk) || \is_int($chunk), 'Path chunk should be an int or string');
 

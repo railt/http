@@ -33,7 +33,7 @@ interface ResponseInterface extends MessageInterface, \JsonSerializable
      * @param MessageInterface $message
      * @return ResponseInterface
      */
-    public function addMessage(MessageInterface $message): ResponseInterface;
+    public function addMessage(MessageInterface $message): self;
 
     /**
      * @return string

@@ -37,14 +37,14 @@ class DebugExtension extends Extension
     public function __construct(\Throwable $error, int $trace = self::MAX_TRACE_SIZE)
     {
         $this->exceptions[] = $error;
-        $this->trace = \max(0, $trace);
+        $this->trace        = \max(0, $trace);
     }
 
     /**
      * @param \Throwable $error
      * @return DebugExtension
      */
-    public function addException(\Throwable $error): DebugExtension
+    public function addException(\Throwable $error): self
     {
         $this->exceptions[] = $error;
 
