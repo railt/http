@@ -35,7 +35,9 @@ class SymfonyProvider extends Provider
      */
     protected function isJson(): bool
     {
-        return $this->matchJson($this->request->getContentType() ?? self::CONTENT_TYPE_DEFAULT);
+        $server = $this->request->headers->get(self::CONTENT_TYPE_KEY, self::CONTENT_TYPE_DEFAULT);
+
+        return $this->request->getContentType() === 'json' || $this->matchJson($server);
     }
 
     /**
