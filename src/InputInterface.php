@@ -78,6 +78,11 @@ interface InputInterface
     public function getParentResponse();
 
     /**
+     * @return iterable
+     */
+    public function getRelations(): iterable;
+
+    /**
      * @param mixed $parent
      * @param mixed $parentResponse
      * @return void
