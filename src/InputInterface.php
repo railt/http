@@ -83,6 +83,12 @@ interface InputInterface
     public function getRelations(): iterable;
 
     /**
+     * @param string $field
+     * @return bool
+     */
+    public function hasRelation(string $field): bool;
+
+    /**
      * @param mixed $parent
      * @param mixed $parentResponse
      * @return void
