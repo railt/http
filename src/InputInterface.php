@@ -83,10 +83,10 @@ interface InputInterface
     public function getRelations(): iterable;
 
     /**
-     * @param string $field
+     * @param string ...$fields
      * @return bool
      */
-    public function hasRelation(string $field): bool;
+    public function hasRelation(string ...$fields): bool;
 
     /**
      * @param mixed $parent
