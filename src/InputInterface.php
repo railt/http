@@ -78,9 +78,13 @@ interface InputInterface
     public function getParentResponse();
 
     /**
-     * @return iterable
+     * Note: The return value may be different from the specified
+     * value. It all depends on what SDL parser you use.
+     *
+     * @param int $depth
+     * @return iterable|\Railt\SDL\Contracts\Dependent\FieldDefinition[]
      */
-    public function getRelations(): iterable;
+    public function getRelations(int $depth = 0): iterable;
 
     /**
      * @param string ...$fields
