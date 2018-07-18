@@ -66,9 +66,9 @@ class GraphQLExceptionLocation implements GraphQLExceptionLocationInterface
      * @param array $location
      * @return GraphQLExceptionLocation
      */
-    public static function fromArray(array $location): GraphQLExceptionLocation
+    public static function fromArray(array $location): self
     {
-        $line = (int)($location[static::JSON_LINE_KEY] ?? 0);
+        $line   = (int)($location[static::JSON_LINE_KEY] ?? 0);
         $column = (int)($location[static::JSON_COLUMN_KEY] ?? 0);
 
         return new static($line, $column);

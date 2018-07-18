@@ -14,5 +14,4 @@ namespace Railt\Http\Exception\Extension;
  */
 abstract class Extension implements ExtensionInterface
 {
-
 }

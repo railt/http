@@ -61,7 +61,7 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      * @param array $error
      * @return GraphQLException
      */
-    public static function fromArray(array $error): GraphQLException
+    public static function fromArray(array $error): self
     {
         $message = $error[static::JSON_MESSAGE_KEY] ?? static::UNDEFINED_EXCEPTION_MESSAGE;
 
