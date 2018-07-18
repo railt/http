@@ -56,9 +56,17 @@ class Message implements MessageInterface
     /**
      * @return iterable|\Throwable[]
      */
-    public function getExceptions(): iterable
+    public function getErrors(): iterable
     {
         return $this->errors;
+    }
+
+    /**
+     * @return iterable|\Throwable[]
+     */
+    public function getExceptions(): iterable
+    {
+        return $this->getErrors();
     }
 
     /**
@@ -66,12 +74,21 @@ class Message implements MessageInterface
      */
     public function toArray(): array
     {
-        $data = $this->data instanceof \Traversable ? \iterator_to_array($this->data) : $this->data;
-
         return \array_filter([
-            static::FIELD_DATA   => $data ?: null,
+            static::FIELD_DATA   => $this->getData() ?: null,
             static::FIELD_ERRORS => $this->errors ?: null,
         ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        // Unwrap iterators
+        $this->data = $this->data instanceof \Traversable ? \iterator_to_array($this->data) : $this->data;
+
+        return $this->data;
     }
 
     /**

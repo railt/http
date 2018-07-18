@@ -25,9 +25,20 @@ interface MessageInterface
     public const FIELD_ERRORS = 'errors';
 
     /**
+     * @deprecated Since Railt 1.2. Use getErrors() method instead.
      * @return iterable|\Throwable[]
      */
     public function getExceptions(): iterable;
+
+    /**
+     * @return iterable|\Throwable[]
+     */
+    public function getErrors(): iterable;
+
+    /**
+     * @return array
+     */
+    public function getData(): array;
 
     /**
      * @return array
