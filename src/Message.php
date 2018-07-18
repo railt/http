@@ -15,7 +15,7 @@ namespace Railt\Http;
 class Message implements MessageInterface
 {
     /**
-     * @var array
+     * @var iterable
      */
     private $data;
 
@@ -26,13 +26,31 @@ class Message implements MessageInterface
 
     /**
      * ResponseChunk constructor.
-     * @param array $data
-     * @param array|\Throwable[] $errors
+     * @param iterable $data
+     * @param iterable|\Throwable[] $errors
      */
-    public function __construct(array $data = [], array $errors = [])
+    public function __construct(iterable $data = [], iterable $errors = [])
     {
-        $this->data   = $data;
-        $this->errors = $errors;
+        $this->data = $data;
+        $this->addExceptions($errors);
+    }
+
+    /**
+     * @param iterable|\Throwable[] $errors
+     */
+    public function addExceptions(iterable $errors): void
+    {
+        foreach ($errors as $error) {
+            $this->addException($error);
+        }
+    }
+
+    /**
+     * @param \Throwable $error
+     */
+    public function addException(\Throwable $error): void
+    {
+        $this->errors[] = $error;
     }
 
     /**
@@ -48,8 +66,10 @@ class Message implements MessageInterface
      */
     public function toArray(): array
     {
+        $data = $this->data instanceof \Traversable ? \iterator_to_array($this->data) : $this->data;
+
         return \array_filter([
-            static::FIELD_DATA   => $this->data ?: null,
+            static::FIELD_DATA   => $data ?: null,
             static::FIELD_ERRORS => $this->errors ?: null,
         ]);
     }

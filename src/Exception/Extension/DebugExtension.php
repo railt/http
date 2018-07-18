@@ -54,7 +54,7 @@ class DebugExtension extends Extension
     /**
      * @return array
      */
-    public function toArray(): array
+    public function getValue(): array
     {
         $errors = [];
 
