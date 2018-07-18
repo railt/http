@@ -71,13 +71,29 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return iterable
+     * @return iterable|\Throwable[]
      */
     public function getExceptions(): iterable
     {
         foreach ($this->messages as $message) {
             yield from $message->getExceptions();
         }
+    }
+
+    /**
+     * @return iterable|MessageInterface[]
+     */
+    public function getMessages(): iterable
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @return MessageInterface
+     */
+    public function first(): MessageInterface
+    {
+        return \reset($this->messages);
     }
 
     /**
@@ -140,13 +156,13 @@ class Response implements ResponseInterface
      */
     public function toArray(): array
     {
-        return \json_decode(\json_encode($this->getMessages()), true);
+        return \json_decode(\json_encode($this->getMessagesAsArray()), true);
     }
 
     /**
      * @return array
      */
-    private function getMessages(): array
+    private function getMessagesAsArray(): array
     {
         switch (\count($this->messages)) {
             case 0:

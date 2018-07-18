@@ -49,4 +49,14 @@ interface ResponseInterface extends MessageInterface, \JsonSerializable
      * @return bool
      */
     public function isBatched(): bool;
+
+    /**
+     * @return iterable|MessageInterface[]
+     */
+    public function getMessages(): iterable;
+
+    /**
+     * @return MessageInterface
+     */
+    public function first(): MessageInterface;
 }
