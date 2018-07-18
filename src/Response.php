@@ -73,11 +73,19 @@ class Response implements ResponseInterface
     /**
      * @return iterable|\Throwable[]
      */
-    public function getExceptions(): iterable
+    public function getErrors(): iterable
     {
         foreach ($this->messages as $message) {
-            yield from $message->getExceptions();
+            yield from $message->getErrors();
         }
+    }
+
+    /**
+     * @return iterable|\Throwable[]
+     */
+    public function getExceptions(): iterable
+    {
+        yield from $this->getErrors();
     }
 
     /**
@@ -89,11 +97,18 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @return MessageInterface
+     * @return array
      */
-    public function first(): MessageInterface
+    public function getData(): array
     {
-        return \reset($this->messages);
+        $result = [];
+
+        foreach ($this->messages as $message) {
+            /** @noinspection SlowArrayOperationsInLoopInspection */
+            $result = \array_merge_recursive($result, $message->getData());
+        }
+
+        return $result;
     }
 
     /**

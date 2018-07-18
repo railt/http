@@ -54,9 +54,4 @@ interface ResponseInterface extends MessageInterface, \JsonSerializable
      * @return iterable|MessageInterface[]
      */
     public function getMessages(): iterable;
-
-    /**
-     * @return MessageInterface
-     */
-    public function first(): MessageInterface;
 }
