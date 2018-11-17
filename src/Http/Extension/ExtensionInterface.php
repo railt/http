@@ -7,13 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Tests\Http;
-
-use PHPUnit\Framework\TestCase as BaseTestCase;
+namespace Railt\Http\Extension;
 
 /**
- * Class TestCase
+ * Interface ExtensionInterface
  */
-abstract class TestCase extends BaseTestCase
+interface ExtensionInterface
 {
+    /**
+     * @return array
+     */
+    public function getValue(): array;
 }

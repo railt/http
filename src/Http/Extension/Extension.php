@@ -7,13 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Tests\Http;
-
-use PHPUnit\Framework\TestCase as BaseTestCase;
+namespace Railt\Http\Extension;
 
 /**
- * Class TestCase
+ * Class Extension
  */
-abstract class TestCase extends BaseTestCase
+abstract class Extension implements ExtensionInterface
 {
 }
