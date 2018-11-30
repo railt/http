@@ -32,25 +32,18 @@ class Input implements InputInterface
     protected $request;
 
     /**
-     * @var string|null
-     */
-    private $operation;
-
-    /**
      * @var array|string[]
      */
-    private $preferTypes = [];
+    protected $preferTypes = [];
 
     /**
      * Input constructor.
      * @param RequestInterface $request
      * @param string $typeName
-     * @param string $path
      * @param array $arguments
      */
-    public function __construct(RequestInterface $request, string $typeName, string $path, array $arguments = [])
+    public function __construct(RequestInterface $request, string $typeName, array $arguments = [])
     {
-        $this->withPath($path);
         $this->withRequest($request);
         $this->withTypeName($typeName);
         $this->withArguments($arguments, true);
@@ -81,7 +74,7 @@ class Input implements InputInterface
     /**
      * @return RequestInterface
      */
-    public function getRequest(): RequestInterface
+    public function request(): RequestInterface
     {
         return $this->request;
     }
@@ -92,7 +85,7 @@ class Input implements InputInterface
      */
     public function wants(string $type): bool
     {
-        return \in_array($type, $this->preferTypes, true);
+        return \in_array($type, $this->getPreferTypes(), true);
     }
 
     /**
@@ -113,32 +106,23 @@ class Input implements InputInterface
 
     /**
      * @param string ...$types
-     * @return Input
+     * @return Input|$this
      */
     public function withPreferType(string ...$types): InputInterface
     {
-        foreach ($types as $type) {
-            $this->preferTypes[] = $type;
-        }
+        $this->preferTypes = \array_merge($this->preferTypes, $types);
+        $this->preferTypes = \array_unique($this->preferTypes);
 
         return $this;
     }
 
     /**
-     * @return null|string
+     * @param string ...$types
+     * @return Input|$this
      */
-    public function getOperation(): ?string
+    public function setPreferType(string ...$types): InputInterface
     {
-        return $this->operation;
-    }
-
-    /**
-     * @param null|string $name
-     * @return Input
-     */
-    public function withOperation(?string $name): InputInterface
-    {
-        $this->operation = $name;
+        $this->preferTypes = $types;
 
         return $this;
     }
@@ -152,7 +136,6 @@ class Input implements InputInterface
             'type'      => $this->type,
             'path'      => $this->path,
             'alias'     => $this->alias,
-            'operation' => $this->operation,
             'arguments' => $this->arguments,
         ]);
     }

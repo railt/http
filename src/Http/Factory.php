@@ -20,7 +20,7 @@ use Railt\Http\Resolver\ResolverInterface;
 /**
  * Class Factory
  */
-class Factory
+class Factory implements \IteratorAggregate
 {
     /**
      * @var string[]
@@ -55,19 +55,38 @@ class Factory
 
     /**
      * @param ProviderInterface $provider
-     * @return iterable|RequestInterface[]
+     * @return Factory
      */
-    public static function create(ProviderInterface $provider): iterable
+    public static function create(ProviderInterface $provider): self
     {
-        return (new static($provider))->getRequests();
+        return new static($provider);
     }
 
     /**
-     * @return iterable|RequestInterface[]
+     * @return Factory
      */
-    public static function createFromGlobals(): iterable
+    public static function createFromGlobals(): self
     {
         return static::create(new GlobalsProvider());
+    }
+
+    /**
+     * @param \Closure $each
+     * @return ResponseInterface
+     */
+    public function through(\Closure $each): ResponseInterface
+    {
+        $responses = [];
+
+        foreach ($this->getRequests() as $request) {
+            $responses[] = $each($request);
+        }
+
+        if (\count($responses) === 1) {
+            return $responses[0];
+        }
+
+        return new BatchingResponse(...$responses);
     }
 
     /**
@@ -92,7 +111,7 @@ class Factory
     }
 
     /**
-     * @return iterable|RequestInterface[]
+     * @return iterable|RequestInterface[]|\Traversable
      */
     public function getRequests(): iterable
     {
@@ -129,5 +148,13 @@ class Factory
         }
 
         return $resolved;
+    }
+
+    /**
+     * @return \Traversable|ResponseInterface[]
+     */
+    public function getIterator(): \Traversable
+    {
+        return $this->getRequests();
     }
 }

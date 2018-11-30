@@ -25,10 +25,9 @@ interface ProvidePath
     public function getPath(): string;
 
     /**
-     * @param string $path
-     * @return ProvideType|$this
+     * @return string
      */
-    public function withPath(string $path): ProvideType;
+    public function getRealPath(): string;
 
     /**
      * @return array|string[]
@@ -40,4 +39,15 @@ interface ProvidePath
      * @return ProvideType|$this
      */
     public function withPathChunks(array $chunks): ProvideType;
+
+    /**
+     * @return array|string[]
+     */
+    public function getRealPathChunks(): array;
+
+    /**
+     * @param array|string[] $chunks
+     * @return ProvideType|$this
+     */
+    public function withRealPathChunks(array $chunks): ProvideType;
 }

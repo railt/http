@@ -34,7 +34,7 @@ trait HasParents
     public function getParent(int $depth = 0)
     {
         if ($this->parentResolver) {
-            return ($this->parentResolver)($depth);
+            return ($this->parentResolver)($depth, $this);
         }
 
         return null;
@@ -58,7 +58,7 @@ trait HasParents
     public function getParentInput(int $depth = 0): ?InputInterface
     {
         if ($this->parentInputResolver) {
-            return ($this->parentInputResolver)($depth);
+            return ($this->parentInputResolver)($depth, $this);
         }
 
         return null;

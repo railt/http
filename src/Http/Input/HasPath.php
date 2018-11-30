@@ -16,21 +16,48 @@ namespace Railt\Http\Input;
 trait HasPath
 {
     /**
-     * @var string
+     * @var array|string[]
      */
-    protected $path;
+    protected $path = [];
 
     /**
+     * @var array|string[]
+     */
+    protected $realPath = [];
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public static function pathToParentPath(string $path): string
+    {
+        return self::chunksToPath(self::chunksToParentChunks(self::pathToChunks($path)));
+    }
+
+    /**
+     * @param array|string[] $chunks
+     * @return string
+     */
+    public static function chunksToPath($chunks): string
+    {
+        $chunks = \array_map('\\strval', $chunks);
+        $chunks = \array_filter($chunks, '\\strlen');
+
+        return \implode(ProvidePath::PATH_DELIMITER, $chunks);
+    }
+
+    /**
+     * @param array|string[] $chunks
      * @return array|string[]
      */
-    public function getPathChunks(): array
+    public static function chunksToParentChunks(array $chunks): array
     {
-        return static::pathToChunks($this->getPath());
+        return \array_slice($chunks, 0, -1);
     }
 
     /**
      * @param string $path
-     * @return array
+     * @return array|string[]
      */
     public static function pathToChunks(string $path): array
     {
@@ -44,11 +71,27 @@ trait HasPath
     }
 
     /**
+     * @return array|string[]
+     */
+    public function getPathChunks(): array
+    {
+        return $this->path;
+    }
+
+    /**
      * @return string
      */
     public function getPath(): string
     {
-        return $this->path;
+        return self::chunksToPath($this->getPathChunks());
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealPath(): string
+    {
+        return self::chunksToPath($this->getRealPathChunks());
     }
 
     /**
@@ -57,29 +100,27 @@ trait HasPath
      */
     public function withPathChunks(array $chunks): ProvideType
     {
-        return $this->withPath(static::chunksToPath($chunks));
-    }
-
-    /**
-     * @param string $path
-     * @return ProvideType|$this
-     */
-    public function withPath(string $path): ProvideType
-    {
-        $this->path = $path;
+        $this->path = $chunks;
 
         return $this;
     }
 
     /**
-     * @param array|string[] $chunks
-     * @return string
+     * @return array
      */
-    public static function chunksToPath(array $chunks): string
+    public function getRealPathChunks(): array
     {
-        $chunks = \array_map('\\strval', $chunks);
-        $chunks = \array_filter($chunks, '\\strlen');
+        return $this->realPath;
+    }
 
-        return \implode(ProvidePath::PATH_DELIMITER, $chunks);
+    /**
+     * @param array|string[] $chunks
+     * @return ProvideType|$this
+     */
+    public function withRealPathChunks(array $chunks): ProvideType
+    {
+        $this->realPath = $chunks;
+
+        return $this;
     }
 }

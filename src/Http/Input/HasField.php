@@ -77,13 +77,11 @@ trait HasField
     }
 
     /**
-     * @param string $path
+     * @param array $chunks
      * @return string
      */
-    public static function pathToFieldName(string $path): string
+    public static function pathToFieldName(array $chunks): string
     {
-        $chunks = HasPath::pathToChunks($path);
-
         return $chunks[\count($chunks) - 1];
     }
 

@@ -23,7 +23,7 @@ interface InputInterface extends ProvideArguments, ProvideType, ProvideParents, 
     /**
      * @return RequestInterface
      */
-    public function getRequest(): RequestInterface;
+    public function request(): RequestInterface;
 
     /**
      * @param RequestInterface $request
@@ -49,7 +49,13 @@ interface InputInterface extends ProvideArguments, ProvideType, ProvideParents, 
 
     /**
      * @param string ...$types
-     * @return InputInterface
+     * @return InputInterface|$this
      */
     public function withPreferType(string ...$types): self;
+
+    /**
+     * @param string ...$types
+     * @return InputInterface|$this
+     */
+    public function setPreferType(string ...$types): self;
 }

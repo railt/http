@@ -41,7 +41,7 @@ class Output implements OutputInterface
      * @param mixed $value
      * @return Output
      */
-    public static function new($value = []): self
+    public static function new($value = null): self
     {
         return new static($value);
     }

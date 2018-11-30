@@ -104,4 +104,12 @@ class Response implements ResponseInterface
     {
         return $this->data;
     }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->render();
+    }
 }
