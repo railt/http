@@ -19,10 +19,11 @@ use Railt\Http\Response\ResponseRenderer;
  */
 class Response implements ResponseInterface
 {
-    use ResponseRenderer;
+    use DebugTrait;
     use HasExtensions;
     use HasExceptions;
-    use DebugTrait;
+    use HasIdentifier;
+    use ResponseRenderer;
 
     /**
      * @var int|null

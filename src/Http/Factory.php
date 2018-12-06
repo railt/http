@@ -16,6 +16,7 @@ use Railt\Http\Resolver\GetHttpRequest;
 use Railt\Http\Resolver\JsonHttpRequest;
 use Railt\Http\Resolver\PostHttpRequest;
 use Railt\Http\Resolver\ResolverInterface;
+use Railt\Http\Response\BatchingResponse;
 
 /**
  * Class Factory
@@ -54,12 +55,13 @@ class Factory implements \IteratorAggregate
     }
 
     /**
-     * @param ProviderInterface $provider
-     * @return Factory
+     * @return void
      */
-    public static function create(ProviderInterface $provider): self
+    private function boot(): void
     {
-        return new static($provider);
+        foreach (self::DEFAULT_RESOLVERS as $resolver) {
+            $this->resolvers[] = new $resolver();
+        }
     }
 
     /**
@@ -71,41 +73,24 @@ class Factory implements \IteratorAggregate
     }
 
     /**
-     * @param \Closure $each
-     * @return ResponseInterface
-     */
-    public function through(\Closure $each): ResponseInterface
-    {
-        $responses = [];
-
-        foreach ($this->getRequests() as $request) {
-            $responses[] = $each($request);
-        }
-
-        if (\count($responses) === 1) {
-            return $responses[0];
-        }
-
-        return new BatchingResponse(...$responses);
-    }
-
-    /**
-     * @return void
-     */
-    private function boot(): void
-    {
-        foreach (self::DEFAULT_RESOLVERS as $resolver) {
-            $this->resolvers[] = new $resolver();
-        }
-    }
-
-    /**
-     * @param ResolverInterface $resolver
+     * @param ProviderInterface $provider
      * @return Factory
      */
-    public function addResolver(ResolverInterface $resolver): self
+    public static function create(ProviderInterface $provider): self
     {
-        $this->resolvers[] = $resolver;
+        return new static($provider);
+    }
+
+    /**
+     * @param ListenerInterface $listener
+     * @param \Closure $each
+     * @return Factory
+     */
+    public function listen(ListenerInterface $listener, \Closure $each): self
+    {
+        foreach ($this->getRequests() as $request) {
+            $listener->listen($request, $each);
+        }
 
         return $this;
     }
@@ -148,6 +133,41 @@ class Factory implements \IteratorAggregate
         }
 
         return $resolved;
+    }
+
+    /**
+     * @param ResponderInterface $responder
+     * @return ResponseInterface
+     */
+    public function request(ResponderInterface $responder): ResponseInterface
+    {
+        $responses = [];
+
+        foreach ($this->getRequests() as $request) {
+            $responses[] = $responder->request($request);
+        }
+
+        switch (\count($responses)) {
+            case 0:
+                return $responder->request(new Request(''));
+
+            case 1:
+                return \reset($responses);
+
+            default:
+                return new BatchingResponse(...$responses);
+        }
+    }
+
+    /**
+     * @param ResolverInterface $resolver
+     * @return Factory
+     */
+    public function addResolver(ResolverInterface $resolver): self
+    {
+        $this->resolvers[] = $resolver;
+
+        return $this;
     }
 
     /**

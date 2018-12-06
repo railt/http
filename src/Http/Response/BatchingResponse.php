@@ -7,12 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Http\Response;
 
 use Railt\Http\Extension\HasExtensions;
-use Railt\Http\Response\DebugTrait;
-use Railt\Http\Response\ProvideExceptions;
-use Railt\Http\Response\ResponseRenderer;
+use Railt\Http\HasIdentifier;
+use Railt\Http\ResponseInterface;
 
 /**
  * Class BatchingResponse
@@ -21,6 +20,7 @@ class BatchingResponse implements ResponseInterface
 {
     use DebugTrait;
     use HasExtensions;
+    use HasIdentifier;
     use ResponseRenderer;
 
     /**
@@ -42,6 +42,15 @@ class BatchingResponse implements ResponseInterface
         foreach ($responses as $response) {
             $this->responses[] = $response;
         }
+    }
+
+    /**
+     * @return int
+     * @throws \LogicException
+     */
+    public function getId(): int
+    {
+        throw new \LogicException(__CLASS__ . ' cannot contain request id');
     }
 
     /**
@@ -173,11 +182,11 @@ class BatchingResponse implements ResponseInterface
     }
 
     /**
-     * @param array $data
+     * @param array|null $data
      * @return ResponseInterface
      * @throws \LogicException
      */
-    public function withData(array $data): ResponseInterface
+    public function withData(?array $data): ResponseInterface
     {
         throw new \LogicException('Can not update data. The ' . __CLASS__ . ' is immutable.');
     }
