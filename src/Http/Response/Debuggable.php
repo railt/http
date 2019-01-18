@@ -21,7 +21,7 @@ interface Debuggable
 
     /**
      * @param bool $debug
-     * @return Debuggable|$this
+     * @return Debuggable
      */
     public function debug(bool $debug = true): self;
 }

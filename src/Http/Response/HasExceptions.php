@@ -59,10 +59,6 @@ trait HasExceptions
                 $exception = GraphQLException::fromThrowable($exception);
             }
 
-            if ($this->isDebug()) {
-                $exception->publish();
-            }
-
             $errors[] = $exception->jsonSerialize();
         }
 

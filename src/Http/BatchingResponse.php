@@ -7,11 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Response;
+namespace Railt\Http;
 
 use Railt\Http\Extension\HasExtensions;
-use Railt\Http\HasIdentifier;
-use Railt\Http\ResponseInterface;
+use Railt\Http\Response\DebugTrait;
+use Railt\Http\Response\ProvideExceptions;
+use Railt\Http\Response\ResponseRenderer;
 
 /**
  * Class BatchingResponse
@@ -20,7 +21,6 @@ class BatchingResponse implements ResponseInterface
 {
     use DebugTrait;
     use HasExtensions;
-    use HasIdentifier;
     use ResponseRenderer;
 
     /**
@@ -42,15 +42,6 @@ class BatchingResponse implements ResponseInterface
         foreach ($responses as $response) {
             $this->responses[] = $response;
         }
-    }
-
-    /**
-     * @return int
-     * @throws \LogicException
-     */
-    public function getId(): int
-    {
-        throw new \LogicException(__CLASS__ . ' cannot contain request id');
     }
 
     /**

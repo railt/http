@@ -17,7 +17,7 @@ use Railt\Http\Response\Renderable;
 /**
  * Interface ResponseInterface
  */
-interface ResponseInterface extends ProvideExceptions, ProvidesExtensions, Renderable, Debuggable, Identifiable
+interface ResponseInterface extends ProvideExceptions, ProvidesExtensions, Renderable, Debuggable
 {
     /**
      * @var string Data field name

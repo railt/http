@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\Http\Provider\ProviderInterface;
 use Railt\Http\Request\HasOperation;
 use Railt\Http\Request\HasQueryType;
 use Railt\Http\Request\HasVariables;
@@ -35,20 +34,11 @@ class Request implements RequestInterface
      * @param array $variables
      * @param string|null $operation
      */
-    public function __construct(string $query = '', array $variables = [], string $operation = null)
+    public function __construct(string $query, array $variables = [], string $operation = null)
     {
         $this->withQuery($query);
         $this->withVariables($variables);
         $this->withOperation($operation);
-    }
-
-    /**
-     * @param ProviderInterface|null $provider
-     * @return Factory
-     */
-    public static function parse(ProviderInterface $provider = null): Factory
-    {
-        return $provider ? Factory::create($provider) : Factory::createFromGlobals();
     }
 
     /**
