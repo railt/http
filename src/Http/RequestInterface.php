@@ -9,23 +9,26 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\Http\Request\ProvideOperation;
-use Railt\Http\Request\ProvideQueryType;
-use Railt\Http\Request\ProvideVariables;
+use Railt\Http\Provider\ProviderInterface;
 
 /**
  * Interface RequestInterface
  */
-interface RequestInterface extends ProvideQueryType, ProvideOperation, ProvideVariables, Identifiable
+interface RequestInterface extends ProviderInterface, QueryInterface, \IteratorAggregate
 {
     /**
-     * @return string
+     * @param QueryInterface $query
+     * @return RequestInterface
      */
-    public function getQuery(): string;
+    public function addQuery(QueryInterface $query): self;
 
     /**
-     * @param string $query
-     * @return RequestInterface|$this
+     * @return QueryInterface
      */
-    public function withQuery(string $query): self;
+    public function first(): QueryInterface;
+
+    /**
+     * @return bool
+     */
+    public function isBatched(): bool;
 }

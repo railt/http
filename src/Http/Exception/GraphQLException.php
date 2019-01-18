@@ -9,17 +9,15 @@ declare(strict_types=1);
 
 namespace Railt\Http\Exception;
 
+use Railt\Http\Exception\Extension\DataExtension;
+use Railt\Http\Exception\Extension\ExtensionInterface;
 use Railt\Http\Exception\GraphQLExceptionLocation as Location;
-use Railt\Http\Extension\DataExtension;
-use Railt\Http\Extension\HasExtensions;
 
 /**
  * Class GraphQLException
  */
 class GraphQLException extends \LogicException implements GraphQLExceptionInterface
 {
-    use HasExtensions;
-
     /**
      * For all errors that reflect the internal state of the application
      * and should not be visible to users, the message should be replaced
@@ -40,6 +38,11 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
     protected $path = [];
 
     /**
+     * @var array|ExtensionInterface[]
+     */
+    protected $extensions = [];
+
+    /**
      * @var array|GraphQLExceptionLocationInterface[]
      */
     protected $locations = [];
@@ -55,19 +58,19 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
      */
     public static function fromArray(array $error): self
     {
-        $message = $error[static::FIELD_MESSAGE] ?? static::UNDEFINED_EXCEPTION_MESSAGE;
+        $message = $error[static::JSON_MESSAGE_KEY] ?? static::UNDEFINED_EXCEPTION_MESSAGE;
 
-        $exception = (new static($message))->publish();
+        $exception = (new static($message))->makePublic();
 
-        foreach ($error[static::FIELD_LOCATIONS] ?? [] as $location) {
+        foreach ($error[static::JSON_LOCATIONS_KEY] ?? [] as $location) {
             $exception->addLocation(Location::fromArray($location));
         }
 
-        foreach ($error[static::FIELD_PATH] ?? [] as $chunk) {
+        foreach ($error[static::JSON_PATH_KEY] ?? [] as $chunk) {
             $exception->addPath($chunk);
         }
 
-        foreach ($error[static::FIELD_EXTENSIONS] ?? [] as $name => $value) {
+        foreach ($error[static::JSON_EXTENSIONS_KEY] ?? [] as $name => $value) {
             $exception->addExtension($name, new DataExtension($value));
         }
 
@@ -75,18 +78,9 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
     }
 
     /**
-     * @param \Throwable $exception
-     * @return GraphQLException
-     */
-    public static function fromThrowable(\Throwable $exception): self
-    {
-        return new static($exception->getMessage(), $exception->getCode(), $exception);
-    }
-
-    /**
      * @return $this|GraphQLException
      */
-    public function publish(): GraphQLExceptionInterface
+    public function makePublic(): self
     {
         $this->public = true;
 
@@ -123,10 +117,12 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
     public function jsonSerialize(): array
     {
         return \array_filter([
-            static::FIELD_MESSAGE    => $this->getPublicMessage(),
-            static::FIELD_LOCATIONS  => $this->getLocations() ?: null,
-            static::FIELD_PATH       => $this->getPath() ?: null,
-            static::FIELD_EXTENSIONS => $this->getExtensions() ?: null,
+            static::JSON_MESSAGE_KEY    => $this->getPublicMessage(),
+            static::JSON_LOCATIONS_KEY  => $this->getLocations() ?: null,
+            static::JSON_PATH_KEY       => $this->getPath() ?: null,
+            static::JSON_EXTENSIONS_KEY => \array_map(function (ExtensionInterface $ext) {
+                return $ext->getValue();
+            }, $this->getExtensions()) ?: null,
         ]);
     }
 
@@ -186,9 +182,55 @@ class GraphQLException extends \LogicException implements GraphQLExceptionInterf
     }
 
     /**
+     * @return iterable
+     */
+    public function getExtensions(): iterable
+    {
+        return $this->extensions;
+    }
+
+    /**
+     * @param iterable|ExtensionInterface[] $extensions
      * @return $this|GraphQLException
      */
-    public function hide(): GraphQLExceptionInterface
+    public function setExtensions(iterable $extensions): self
+    {
+        $this->extensions = [];
+
+        foreach ($extensions as $key => $value) {
+            $this->addExtension($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string|int|bool|float $key
+     * @param ExtensionInterface $value
+     * @return $this|GraphQLException
+     */
+    public function addExtension($key, ExtensionInterface $value): self
+    {
+        \assert(\is_scalar($key) && $key, 'Extension key should be a non-null scalar');
+
+        $this->extensions[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $key
+     * @return null|ExtensionInterface
+     */
+    public function getExtension($key): ?ExtensionInterface
+    {
+        return $this->extensions[$key] ?? null;
+    }
+
+    /**
+     * @return $this|GraphQLException
+     */
+    public function makePrivate(): self
     {
         $this->public = false;
 

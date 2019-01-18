@@ -9,46 +9,125 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\Http\Extension\HasExtensions;
-use Railt\Http\Response\DebugTrait;
-use Railt\Http\Response\HasExceptions;
-use Railt\Http\Response\ResponseRenderer;
+use Railt\Http\Exception\GraphQLException;
 
 /**
  * Class Response
  */
 class Response implements ResponseInterface
 {
-    use ResponseRenderer;
-    use HasExtensions;
-    use HasExceptions;
-    use DebugTrait;
+    /**
+     * @var bool
+     */
+    private $vendor = true;
 
     /**
-     * @var int|null
+     * @var bool
      */
-    protected $statusCode;
+    private $debug = false;
 
     /**
-     * @var array|null
+     * @var array|MessageInterface[]
      */
-    protected $data;
+    private $messages = [];
+
+    /**
+     * @var int
+     */
+    private $statusCode;
 
     /**
      * Response constructor.
-     * @param array|null $data
+     * @param array $data
+     * @param iterable|\Throwable[] $errors
      */
-    public function __construct(array $data = null)
+    public function __construct(array $data = [], iterable $errors = [])
     {
-        $this->data = $data;
+        if ($data || $errors) {
+            $this->addMessage(new Message($data, $errors));
+        }
     }
 
     /**
-     * @return bool
+     * @param bool $debug
+     * @return ResponseInterface
      */
-    public function isSuccessful(): bool
+    public function debug(bool $debug = false): ResponseInterface
     {
-        return $this->getStatusCode() < 400;
+        $this->debug = $debug;
+
+        return $this;
+    }
+
+    /**
+     * @param MessageInterface $message
+     * @return ResponseInterface
+     */
+    public function addMessage(MessageInterface $message): ResponseInterface
+    {
+        $this->messages[] = $message;
+
+        return $this;
+    }
+
+    /**
+     * @return iterable|\Throwable[]
+     */
+    public function getExceptions(): iterable
+    {
+        foreach ($this->messages as $message) {
+            yield from $message->getExceptions();
+        }
+    }
+
+    /**
+     * @return iterable|MessageInterface[]
+     */
+    public function getMessages(): iterable
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        $result = [];
+
+        foreach ($this->messages as $message) {
+            /** @noinspection SlowArrayOperationsInLoopInspection */
+            $result = \array_merge_recursive($result, $message->getData());
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function withVendorHeader(bool $enable = true): void
+    {
+        $this->vendor = $enable;
+    }
+
+    /**
+     * @return void
+     */
+    public function send(): void
+    {
+        if (! \headers_sent()) {
+            \http_response_code($this->getStatusCode());
+            \header('Content-Type: application/json');
+
+            if ($this->vendor) {
+                \header('X-GraphQL-Server: Railt');
+            }
+        }
+
+        echo $this->render();
+
+        \flush();
     }
 
     /**
@@ -57,32 +136,26 @@ class Response implements ResponseInterface
     public function getStatusCode(): int
     {
         if ($this->statusCode === null) {
-            return $this->hasErrors() ? static::STATUS_CODE_ERROR : static::STATUS_CODE_SUCCESS;
+            $this->statusCode = $this->hasErrors()
+                ? static::STATUS_CODE_ERROR
+                : static::STATUS_CODE_SUCCESS;
         }
 
         return $this->statusCode;
     }
 
     /**
-     * @param int $code
-     * @return ResponseInterface|$this
+     * @return string
      */
-    public function withStatusCode(int $code): ResponseInterface
+    public function render(): string
     {
-        $this->statusCode = $code;
+        $options = \JSON_HEX_TAG | \JSON_HEX_APOS | \JSON_HEX_AMP | \JSON_HEX_QUOT | \JSON_PARTIAL_OUTPUT_ON_ERROR;
 
-        return $this;
-    }
+        if ($this->debug) {
+            $options |= \JSON_PRETTY_PRINT;
+        }
 
-    /**
-     * @param array|null $data
-     * @return ResponseInterface|$this
-     */
-    public function withData(?array $data): ResponseInterface
-    {
-        $this->data = $data;
-
-        return $this;
+        return \json_encode($this->toArray(), $options);
     }
 
     /**
@@ -90,26 +163,82 @@ class Response implements ResponseInterface
      */
     public function toArray(): array
     {
-        return \array_filter([
-            static::FIELD_ERRORS     => $this->getErrors() ?: null,
-            static::FIELD_DATA       => $this->getData(),
-            static::FIELD_EXTENSIONS => $this->getExtensions() ?: null,
-        ]);
+        return \json_decode(\json_encode($this->getMessagesAsArray()), true);
     }
 
     /**
-     * @return array|null
+     * @return array
      */
-    public function getData(): ?array
+    private function getMessagesAsArray(): array
     {
-        return $this->data;
+        switch (\count($this->messages)) {
+            case 0:
+                return (new Message())->toArray();
+
+            case 1:
+                return \reset($this->messages)->toArray();
+
+            default:
+                $result = [];
+
+                foreach ($this->messages as $message) {
+                    $result[] = $message->toArray();
+                }
+
+                return $result;
+        }
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function __toString(): string
+    public function isBatched(): bool
     {
-        return $this->render();
+        return \count($this->messages) > 1;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return ! $this->hasErrors();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasErrors(): bool
+    {
+        foreach ($this->messages as $message) {
+            if ($message->hasErrors()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    /**
+     * @param array $response
+     * @return ResponseInterface
+     */
+    public static function fromArray(array $response): ResponseInterface
+    {
+        $errors = [];
+
+        foreach ($response[static::FIELD_ERRORS] ?? [] as $error) {
+            $errors[] = GraphQLException::fromArray((array)$error);
+        }
+
+        return new static((array)($response[static::FIELD_DATA] ?? []), $errors);
     }
 }

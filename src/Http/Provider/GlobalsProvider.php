@@ -12,47 +12,72 @@ namespace Railt\Http\Provider;
 /**
  * Class GlobalsProvider
  */
-class GlobalsProvider implements ProviderInterface
+class GlobalsProvider extends Provider
 {
     /**
      * @var string Name of a read-only stream that allows you to read raw data from the request body.
      */
-    public const PHP_INPUT_STREAM = 'php://input';
+    protected const PHP_INPUT_STREAM = 'php://input';
 
     /**
-     * @var string Content-Type header key name from $_SERVER variable
+     * @return bool
      */
-    public const CONTENT_TYPE_KEY = 'CONTENT_TYPE';
-
-    /**
-     * @return array
-     */
-    public function getQueryArguments(): array
+    protected function isJson(): bool
     {
-        return $_GET ?? [];
-    }
-
-    /**
-     * @return array
-     */
-    public function getPostArguments(): array
-    {
-        return $_POST ?? [];
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getContentType(): ?string
-    {
-        return $_SERVER[static::CONTENT_TYPE_KEY] ?? null;
+        return $this->matchJson($this->getContentType());
     }
 
     /**
      * @return string
      */
-    public function getBody(): string
+    private function getContentType(): string
     {
-        return (string)@\file_get_contents(static::PHP_INPUT_STREAM);
+        return $this->readServerArguments()[static::CONTENT_TYPE_KEY] ?? static::CONTENT_TYPE_DEFAULT;
+    }
+
+    /**
+     * @return array
+     */
+    protected function readServerArguments(): array
+    {
+        return (array)($_SERVER ?? []);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getJson(): array
+    {
+        try {
+            $content = (string)@\file_get_contents(static::PHP_INPUT_STREAM);
+
+            return $this->parseJson($content);
+        } catch (\LogicException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * @return iterable
+     */
+    protected function getRequestArguments(): iterable
+    {
+        return \array_merge($this->readGetArguments(), $this->readPostArguments());
+    }
+
+    /**
+     * @return array
+     */
+    protected function readGetArguments(): array
+    {
+        return (array)($_GET ?? []);
+    }
+
+    /**
+     * @return array
+     */
+    protected function readPostArguments(): array
+    {
+        return (array)($_POST ?? []);
     }
 }

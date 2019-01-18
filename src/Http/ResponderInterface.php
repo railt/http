@@ -7,17 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Provider;
-
-use Railt\Http\QueryInterface;
+namespace Railt\Http;
 
 /**
- * Interface ProviderInterface
+ * Interface ResponderInterface
  */
-interface ProviderInterface
+interface ResponderInterface
 {
     /**
-     * @return QueryInterface[]|iterable
+     * @param RequestInterface $request
+     * @return ResponseInterface
      */
-    public function getQueries(): iterable;
+    public function request(RequestInterface $request): ResponseInterface;
 }

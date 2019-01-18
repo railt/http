@@ -7,17 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Provider;
-
-use Railt\Http\QueryInterface;
+namespace Railt\Http\Exception\Extension;
 
 /**
- * Interface ProviderInterface
+ * Interface ExtensionInterface
  */
-interface ProviderInterface
+interface ExtensionInterface
 {
     /**
-     * @return QueryInterface[]|iterable
+     * @return mixed
      */
-    public function getQueries(): iterable;
+    public function getValue();
 }

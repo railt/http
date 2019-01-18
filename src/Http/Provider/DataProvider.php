@@ -9,103 +9,34 @@ declare(strict_types=1);
 
 namespace Railt\Http\Provider;
 
+use Railt\Http\QueryInterface;
+
 /**
  * Class DataProvider
  */
 class DataProvider implements ProviderInterface
 {
     /**
-     * @var array
+     * @var array|QueryInterface[]
      */
-    private $query;
+    private $queries = [];
 
     /**
-     * @var array
+     * @param QueryInterface $query
+     * @return $this
      */
-    private $post;
-
-    /**
-     * @var string|null
-     */
-    private $contentType;
-
-    /**
-     * @var string
-     */
-    private $body = '';
-
-    /**
-     * DataProvider constructor.
-     * @param array $query
-     * @param array $post
-     */
-    public function __construct(array $query = [], array $post = [])
+    public function addQuery(QueryInterface $query): self
     {
-        $this->query = $query;
-        $this->post  = $post;
-    }
-
-    /**
-     * @param array $query
-     * @param array $post
-     * @return DataProvider
-     */
-    public static function new(array $query = [], array $post = []): self
-    {
-        return new static($query, $post);
-    }
-
-    /**
-     * @return array
-     */
-    public function getQueryArguments(): array
-    {
-        return $this->query;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPostArguments(): array
-    {
-        return $this->post;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContentType(): string
-    {
-        return (string)$this->contentType;
-    }
-
-    /**
-     * @param null|string $contentType
-     * @return DataProvider|$this
-     */
-    public function withContentType(?string $contentType): self
-    {
-        $this->contentType = $contentType;
+        $this->queries[] = $query;
 
         return $this;
     }
 
     /**
-     * @return string
+     * @return iterable
      */
-    public function getBody(): string
+    public function getQueries(): iterable
     {
-        return $this->body;
-    }
-
-    /**
-     * @param string $body
-     * @return DataProvider|$this
-     */
-    public function withBody(string $body): self
-    {
-        $this->body = $body;
-
-        return $this;
+        return $this->queries;
     }
 }
