@@ -26,12 +26,13 @@ class GraphQLExceptionLocation implements GraphQLExceptionLocationInterface
 
     /**
      * GraphQLExceptionLocation constructor.
+     *
      * @param int $line
      * @param int $column
      */
     public function __construct(int $line, int $column = 0)
     {
-        $this->line   = $line;
+        $this->line = $line;
         $this->column = $column;
     }
 
@@ -68,7 +69,7 @@ class GraphQLExceptionLocation implements GraphQLExceptionLocationInterface
      */
     public static function fromArray(array $location): self
     {
-        $line   = (int)($location[static::JSON_LINE_KEY] ?? 0);
+        $line = (int)($location[static::JSON_LINE_KEY] ?? 0);
         $column = (int)($location[static::JSON_COLUMN_KEY] ?? 0);
 
         return new static($line, $column);
