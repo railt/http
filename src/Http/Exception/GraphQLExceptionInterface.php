@@ -9,27 +9,32 @@ declare(strict_types=1);
 
 namespace Railt\Http\Exception;
 
-use Railt\Http\Extension\ProvidesExtensions;
+use Railt\Http\Exception\Extension\ExtensionInterface;
 
 /**
  * Interface GraphQLExceptionInterface
  */
-interface GraphQLExceptionInterface extends ProvidesExtensions, \Throwable, \JsonSerializable
+interface GraphQLExceptionInterface extends \JsonSerializable
 {
     /**
      * @var string
      */
-    public const FIELD_PATH = 'path';
+    public const JSON_PATH_KEY = 'path';
 
     /**
      * @var string
      */
-    public const FIELD_MESSAGE = 'message';
+    public const JSON_MESSAGE_KEY = 'message';
 
     /**
      * @var string
      */
-    public const FIELD_LOCATIONS = 'locations';
+    public const JSON_LOCATIONS_KEY = 'locations';
+
+    /**
+     * @var string
+     */
+    public const JSON_EXTENSIONS_KEY = 'extensions';
 
     /**
      * @return iterable|GraphQLExceptionLocationInterface[]
@@ -42,17 +47,12 @@ interface GraphQLExceptionInterface extends ProvidesExtensions, \Throwable, \Jso
     public function getPath(): iterable;
 
     /**
+     * @return iterable|ExtensionInterface[]
+     */
+    public function getExtensions(): iterable;
+
+    /**
      * @return bool
      */
     public function isPublic(): bool;
-
-    /**
-     * @return GraphQLExceptionInterface
-     */
-    public function publish(): self;
-
-    /**
-     * @return GraphQLExceptionInterface
-     */
-    public function hide(): self;
 }

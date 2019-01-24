@@ -9,40 +9,20 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\Http\Extension\ProvidesExtensions;
-use Railt\Http\Response\Debuggable;
-use Railt\Http\Response\ProvideExceptions;
-use Railt\Http\Response\Renderable;
-
 /**
  * Interface ResponseInterface
  */
-interface ResponseInterface extends ProvideExceptions, ProvidesExtensions, Renderable, Debuggable
+interface ResponseInterface extends MessageInterface, \JsonSerializable
 {
     /**
-     * @var string Data field name
-     */
-    public const FIELD_DATA = 'data';
-
-    /**
-     * @var string Errors field name
-     */
-    public const FIELD_ERRORS = 'errors';
-
-    /**
-     * @var int Positive status code
+     * @var string Positive status code
      */
     public const STATUS_CODE_SUCCESS = 200;
 
     /**
-     * @var int Negative status code
+     * @var string Negative status code
      */
     public const STATUS_CODE_ERROR = 500;
-
-    /**
-     * @return bool
-     */
-    public function isSuccessful(): bool;
 
     /**
      * @return int
@@ -50,26 +30,10 @@ interface ResponseInterface extends ProvideExceptions, ProvidesExtensions, Rende
     public function getStatusCode(): int;
 
     /**
-     * @param int $code
-     * @return ResponseInterface|$this
+     * @param MessageInterface $message
+     * @return ResponseInterface
      */
-    public function withStatusCode(int $code): self;
-
-    /**
-     * @return array|null
-     */
-    public function getData(): ?array;
-
-    /**
-     * @param array|null $data
-     * @return ResponseInterface|$this
-     */
-    public function withData(?array $data): self;
-
-    /**
-     * @return array
-     */
-    public function toArray(): array;
+    public function addMessage(MessageInterface $message): self;
 
     /**
      * @return string
@@ -80,4 +44,14 @@ interface ResponseInterface extends ProvideExceptions, ProvidesExtensions, Rende
      * @return void
      */
     public function send(): void;
+
+    /**
+     * @return bool
+     */
+    public function isBatched(): bool;
+
+    /**
+     * @return iterable|MessageInterface[]
+     */
+    public function getMessages(): iterable;
 }
