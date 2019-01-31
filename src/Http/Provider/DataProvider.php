@@ -43,7 +43,7 @@ class DataProvider implements ProviderInterface
     public function __construct(array $query = [], array $post = [])
     {
         $this->query = $query;
-        $this->post  = $post;
+        $this->post = $post;
     }
 
     /**
