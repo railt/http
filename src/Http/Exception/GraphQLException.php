@@ -131,7 +131,7 @@ class GraphQLException extends ExternalFileException implements GraphQLException
      */
     public function publish(): GraphQLExceptionInterface
     {
-        $this->public = true;
+        $this->public  = true;
         $this->message = $this->originalMessage;
 
         return $this;
@@ -226,7 +226,7 @@ class GraphQLException extends ExternalFileException implements GraphQLException
      */
     public function hide(): GraphQLExceptionInterface
     {
-        $this->public = false;
+        $this->public  = false;
         $this->message = static::INTERNAL_EXCEPTION_MESSAGE;
 
         return $this;
