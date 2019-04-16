@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Extension;
+namespace Railt\Component\Http\Extension;
 
 /**
  * Class DataExtension

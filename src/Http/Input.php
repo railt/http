@@ -7,16 +7,16 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Component\Http;
 
 use Illuminate\Support\Traits\Macroable;
-use Railt\Http\Input\HasArguments;
-use Railt\Http\Input\HasField;
-use Railt\Http\Input\HasParents;
-use Railt\Http\Input\HasPath;
-use Railt\Http\Input\HasPreferTypes;
-use Railt\Http\Input\HasRelatedFields;
-use Railt\Http\Input\HasType;
+use Railt\Component\Http\Input\HasArguments;
+use Railt\Component\Http\Input\HasField;
+use Railt\Component\Http\Input\HasParents;
+use Railt\Component\Http\Input\HasPath;
+use Railt\Component\Http\Input\HasPreferTypes;
+use Railt\Component\Http\Input\HasRelatedFields;
+use Railt\Component\Http\Input\HasType;
 
 /**
  * Class Input

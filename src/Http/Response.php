@@ -7,13 +7,13 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Component\Http;
 
-use Railt\Http\Exception\GraphQLException;
-use Railt\Http\Exception\GraphQLExceptionLocation;
-use Railt\Http\Extension\HasExtensions;
-use Railt\Http\Response\HasExceptions;
-use Railt\Http\Response\ResponseRenderer;
+use Railt\Component\Http\Exception\GraphQLException;
+use Railt\Component\Http\Exception\GraphQLExceptionLocation;
+use Railt\Component\Http\Extension\HasExtensions;
+use Railt\Component\Http\Response\HasExceptions;
+use Railt\Component\Http\Response\ResponseRenderer;
 
 /**
  * Class Response

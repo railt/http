@@ -7,10 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Resolver;
+namespace Railt\Component\Http\Resolver;
 
-use Railt\Http\Provider\ProviderInterface;
-use Railt\Http\RequestInterface;
+use Railt\Component\Http\Provider\ProviderInterface;
+use Railt\Component\Http\RequestInterface;
 
 /**
  * POST requests provides body arguments in the given format:

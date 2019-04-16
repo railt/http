@@ -7,9 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Exception;
+namespace Railt\Component\Http\Exception;
 
-use Railt\Http\Extension\ProvidesExtensions;
+use Railt\Component\Http\Extension\ProvidesExtensions;
 
 /**
  * Interface GraphQLExceptionInterface

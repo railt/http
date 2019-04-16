@@ -7,9 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Component\Http;
 
-use Railt\Http\Output\HasData;
+use Railt\Component\Http\Output\HasData;
 
 /**
  * Class Output

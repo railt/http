@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Identifier;
+namespace Railt\Component\Http\Identifier;
 
 /**
  * Class SharedCollector

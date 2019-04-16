@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Component\Http;
 
 /**
  * Interface Identifiable

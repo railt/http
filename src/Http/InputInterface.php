@@ -7,15 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http;
+namespace Railt\Component\Http;
 
-use Railt\Http\Input\ProvideArguments;
-use Railt\Http\Input\ProvideField;
-use Railt\Http\Input\ProvideParents;
-use Railt\Http\Input\ProvidePath;
-use Railt\Http\Input\ProvidePreferTypes;
-use Railt\Http\Input\ProvideRelatedFields;
-use Railt\Http\Input\ProvideType;
+use Railt\Component\Http\Input\ProvideArguments;
+use Railt\Component\Http\Input\ProvideField;
+use Railt\Component\Http\Input\ProvideParents;
+use Railt\Component\Http\Input\ProvidePath;
+use Railt\Component\Http\Input\ProvidePreferTypes;
+use Railt\Component\Http\Input\ProvideRelatedFields;
+use Railt\Component\Http\Input\ProvideType;
 
 /**
  * Interface InputInterface
