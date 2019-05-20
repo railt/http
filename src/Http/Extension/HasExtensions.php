@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Extension;
+namespace Railt\Http\Extension;
 
 /**
  * Trait HasExtensions

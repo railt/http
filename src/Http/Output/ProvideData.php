@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Output;
+namespace Railt\Http\Output;
 
 /**
  * Interface ProvideData

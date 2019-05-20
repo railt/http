@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Exception;
+namespace Railt\Http\Exception;
 
 /**
  * Class GraphQLExceptionLocation

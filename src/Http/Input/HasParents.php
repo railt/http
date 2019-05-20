@@ -7,9 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Input;
+namespace Railt\Http\Input;
 
-use Railt\Component\Http\InputInterface;
+use Railt\Http\InputInterface;
 
 /**
  * Trait HasParents

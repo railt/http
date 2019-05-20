@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Extension\HasExtensions;
-use Railt\Component\Http\Response\ProvideExceptions;
-use Railt\Component\Http\Response\ResponseRenderer;
+use Railt\Http\Extension\HasExtensions;
+use Railt\Http\Response\ProvideExceptions;
+use Railt\Http\Response\ResponseRenderer;
 
 /**
  * Class BatchingResponse

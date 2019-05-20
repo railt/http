@@ -7,9 +7,9 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Output\ProvideData;
+use Railt\Http\Output\ProvideData;
 
 /**
  * Interface OutputInterface

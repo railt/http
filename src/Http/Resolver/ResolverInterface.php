@@ -7,10 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Resolver;
+namespace Railt\Http\Resolver;
 
-use Railt\Component\Http\Provider\ProviderInterface;
-use Railt\Component\Http\RequestInterface;
+use Railt\Http\Provider\ProviderInterface;
+use Railt\Http\RequestInterface;
 
 /**
  * Interface ResolverInterface

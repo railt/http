@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Response;
+namespace Railt\Http\Response;
 
 /**
  * Interface Renderable

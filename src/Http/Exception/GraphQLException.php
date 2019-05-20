@@ -7,12 +7,12 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Exception;
+namespace Railt\Http\Exception;
 
-use Railt\Component\Exception\ExternalException;
-use Railt\Component\Http\Exception\GraphQLExceptionLocation as Location;
-use Railt\Component\Http\Extension\DataExtension;
-use Railt\Component\Http\Extension\HasExtensions;
+use Phplrt\Exception\ExternalException;
+use Railt\Http\Exception\GraphQLExceptionLocation as Location;
+use Railt\Http\Extension\DataExtension;
+use Railt\Http\Extension\HasExtensions;
 
 /**
  * Class GraphQLException
@@ -141,10 +141,7 @@ class GraphQLException extends ExternalException implements GraphQLExceptionInte
 
         $root = static::getRootException($throwable);
 
-        $exception = new static($throwable->getMessage(), $throwable->getCode(), $root);
-        $exception->from($throwable);
-
-        return $exception;
+        return static::from($throwable, $root);
     }
 
     /**

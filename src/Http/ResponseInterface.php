@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Extension\ProvidesExtensions;
-use Railt\Component\Http\Response\ProvideExceptions;
-use Railt\Component\Http\Response\Renderable;
+use Railt\Http\Extension\ProvidesExtensions;
+use Railt\Http\Response\ProvideExceptions;
+use Railt\Http\Response\Renderable;
 
 /**
  * Interface ResponseInterface

@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Request\HasOperation;
-use Railt\Component\Http\Request\HasQueryType;
-use Railt\Component\Http\Request\HasVariables;
+use Railt\Http\Request\HasOperation;
+use Railt\Http\Request\HasQueryType;
+use Railt\Http\Request\HasVariables;
 
 /**
  * Class Request

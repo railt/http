@@ -7,10 +7,10 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Identifier\CollectorInterface;
-use Railt\Component\Http\Identifier\SharedCollector;
+use Railt\Http\Identifier\CollectorInterface;
+use Railt\Http\Identifier\SharedCollector;
 
 /**
  * Trait HasIdentifier

@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Provider;
+namespace Railt\Http\Provider;
 
 /**
  * Interface ProviderInterface

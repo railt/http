@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Resolver;
+namespace Railt\Http\Resolver;
 
-use Railt\Component\Http\Request;
-use Railt\Component\Http\RequestInterface;
-use Railt\Component\Json\Json;
+use Railt\Http\Request;
+use Railt\Http\RequestInterface;
+use Railt\Json\Json;
 
 /**
  * Class BaseParser

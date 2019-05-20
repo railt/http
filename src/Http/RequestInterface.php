@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Request\ProvideOperation;
-use Railt\Component\Http\Request\ProvideQueryType;
-use Railt\Component\Http\Request\ProvideVariables;
+use Railt\Http\Request\ProvideOperation;
+use Railt\Http\Request\ProvideQueryType;
+use Railt\Http\Request\ProvideVariables;
 
 /**
  * Interface RequestInterface

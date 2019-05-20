@@ -7,15 +7,15 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http;
+namespace Railt\Http;
 
-use Railt\Component\Http\Provider\GlobalsProvider;
-use Railt\Component\Http\Provider\ProviderInterface;
-use Railt\Component\Http\Resolver\ApolloBatchingRequest;
-use Railt\Component\Http\Resolver\GetHttpRequest;
-use Railt\Component\Http\Resolver\JsonHttpRequest;
-use Railt\Component\Http\Resolver\PostHttpRequest;
-use Railt\Component\Http\Resolver\ResolverInterface;
+use Railt\Http\Provider\GlobalsProvider;
+use Railt\Http\Provider\ProviderInterface;
+use Railt\Http\Resolver\ApolloBatchingRequest;
+use Railt\Http\Resolver\GetHttpRequest;
+use Railt\Http\Resolver\JsonHttpRequest;
+use Railt\Http\Resolver\PostHttpRequest;
+use Railt\Http\Resolver\ResolverInterface;
 
 /**
  * Class Factory

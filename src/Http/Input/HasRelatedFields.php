@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Input;
+namespace Railt\Http\Input;
 
 /**
  * Trait HasRelatedFields

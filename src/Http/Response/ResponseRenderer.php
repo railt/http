@@ -7,11 +7,11 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Component\Http\Response;
+namespace Railt\Http\Response;
 
-use Railt\Component\Http\Exception\GraphQLExceptionInterface;
-use Railt\Component\Http\ResponseInterface;
-use Railt\Component\Json\Json;
+use Railt\Http\Exception\GraphQLExceptionInterface;
+use Railt\Http\ResponseInterface;
+use Railt\Json\Json;
 
 /**
  * Trait ResponseRenderer
@@ -42,7 +42,7 @@ trait ResponseRenderer
     /**
      * @param int|null $jsonOptions
      * @return string
-     * @throws \Railt\Component\Json\Exception\JsonException
+     * @throws \Railt\Json\Exception\JsonException
      */
     public function render(int $jsonOptions = null): string
     {
@@ -83,7 +83,7 @@ trait ResponseRenderer
 
     /**
      * @return void
-     * @throws \Railt\Component\Json\Exception\JsonException
+     * @throws \Railt\Json\Exception\JsonException
      */
     public function send(): void
     {
@@ -108,7 +108,7 @@ trait ResponseRenderer
 
     /**
      * @return string
-     * @throws \Railt\Component\Json\Exception\JsonException
+     * @throws \Railt\Json\Exception\JsonException
      */
     public function __toString(): string
     {
