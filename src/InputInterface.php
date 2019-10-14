@@ -18,10 +18,5 @@ interface InputInterface extends
     ProvidesPathInterface,
     ProvidesTypeInfoInterface,
     ProvidesArgumentsInterface
-    // TODO
 {
-    /**
-     * @return RequestInterface
-     */
-    public function request(): RequestInterface;
 }

@@ -9,18 +9,9 @@ declare(strict_types=1);
 
 namespace Railt\Http;
 
-use Railt\Http\Pipeline\RequestPipeline;
 use Railt\Foundation\Extension\Status;
-use Railt\Container\ContainerInterface;
 use Railt\Foundation\Extension\Extension;
-use Railt\Http\Pipeline\PipelineInterface;
-use Railt\Http\Pipeline\RequestPipelineInterface;
 use Railt\Http\Pipeline\Handler\EmptyRequestHandler;
-use Railt\Http\Pipeline\Middleware\RequestDumpMiddleware;
-use Railt\Http\Pipeline\Middleware\ExecutionTimeMiddleware;
-use Railt\Http\Pipeline\Middleware\ErrorUnwrapperMiddleware;
-use Railt\Http\Pipeline\Middleware\ExecutionMemoryMiddleware;
-use Railt\Http\Pipeline\Middleware\ExceptionHandlerMiddleware;
 
 /**
  * Class HttpServiceExtension
@@ -33,7 +24,7 @@ class HttpServiceExtension extends Extension
     public function register(): void
     {
         $this->app->register(HttpKernelInterface::class,
-            fn() => new HttpKernel(new EmptyRequestHandler(static::class))
+            fn () => new HttpKernel()
         );
     }
 
