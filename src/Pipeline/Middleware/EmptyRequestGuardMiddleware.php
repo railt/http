@@ -17,10 +17,15 @@ use Railt\Contracts\Pipeline\Http\HandlerInterface;
 use Railt\Contracts\Pipeline\Http\HttpMiddlewareInterface;
 
 /**
- * Class ExceptionHandlerMiddleware
+ * Class EmptyRequestGuardMiddleware
  */
-class ExceptionHandlerMiddleware implements HttpMiddlewareInterface
+class EmptyRequestGuardMiddleware implements HttpMiddlewareInterface
 {
+    /**
+     * @var string
+     */
+    protected const ERROR_EMPTY_QUERY = 'GraphQL request must contain a valid query data, but it came empty';
+
     /**
      * @param RequestInterface $request
      * @param HandlerInterface $next
@@ -28,14 +33,14 @@ class ExceptionHandlerMiddleware implements HttpMiddlewareInterface
      */
     public function handle(RequestInterface $request, HandlerInterface $next): ResponseInterface
     {
-        try {
-            return $next->handle($request);
-        } catch (\Throwable $e) {
-            $response = new Response();
-            $response = $response->withException($e);
-
+        if ($request->isEmpty()) {
             /** @var ResponseInterface $response */
+            $response = (new Response())
+                ->withClientError(self::ERROR_EMPTY_QUERY);
+
             return $response;
         }
+
+        return $next->handle($request);
     }
 }

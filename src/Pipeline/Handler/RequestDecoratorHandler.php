@@ -13,12 +13,11 @@ namespace Railt\Http\Pipeline\Handler;
 use Railt\Contracts\Http\RequestInterface;
 use Railt\Contracts\Http\ResponseInterface;
 use Railt\Contracts\Pipeline\Http\HandlerInterface;
-use Railt\Contracts\Pipeline\Http\HttpMiddlewareInterface;
 
 /**
- * Class Next
+ * Class RequestDecoratorHandler
  */
-class Next implements HandlerInterface
+final class RequestDecoratorHandler implements HandlerInterface
 {
     /**
      * @var HandlerInterface
@@ -26,28 +25,22 @@ class Next implements HandlerInterface
     private HandlerInterface $handler;
 
     /**
-     * @var HttpMiddlewareInterface
-     */
-    private HttpMiddlewareInterface $middleware;
-
-    /**
-     * Next constructor.
+     * EmptyPipelineHandler constructor.
      *
-     * @param HttpMiddlewareInterface $middleware
      * @param HandlerInterface $handler
      */
-    public function __construct(HttpMiddlewareInterface $middleware, HandlerInterface $handler)
+    public function __construct(HandlerInterface $handler)
     {
-        $this->middleware = $middleware;
         $this->handler = $handler;
     }
 
     /**
      * @param RequestInterface $request
      * @return ResponseInterface
+     * @throws \Throwable
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
-        return $this->middleware->handle($request, $this->handler);
+        return $this->handler->handle($request);
     }
 }

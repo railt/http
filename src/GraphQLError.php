@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Railt package.
  *
@@ -7,30 +8,46 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Exception;
+namespace Railt\Http;
 
-use Railt\Dumper\Facade;
-use Ramsey\Collection\Set;
+use Railt\Http\Common\JsonableTrait;
+use Railt\Http\Error\LocationsTrait;
 use Railt\Http\Common\RenderableTrait;
-use Railt\Http\Extension\ExtensionsTrait;
-use Ramsey\Collection\CollectionInterface;
-use Railt\Http\Exception\Location\Location;
-use Railt\Http\Extension\ExtensionsCollection;
-use Railt\Http\Exception\Location\LocationsTrait;
-use Railt\Http\Exception\Location\LocationInterface;
-use Railt\Http\Exception\Location\LocationsCollection;
-use Railt\Http\Exception\Location\LocationsProviderInterface;
+use Railt\Http\Response\ExtensionsTrait;
+use Railt\Contracts\Http\GraphQLErrorInterface;
+use Railt\Contracts\Http\Error\SourceLocationInterface;
 
 /**
  * Class GraphQLException
  */
-class GraphQLException extends \Exception implements GraphQLExceptionInterface
+class GraphQLError extends \Exception implements GraphQLErrorInterface
 {
+    use JsonableTrait;
     use LocationsTrait;
     use ExtensionsTrait;
     use RenderableTrait {
         __toString as private render;
     }
+
+    /**
+     * @var string
+     */
+    public const FIELD_MESSAGE = 'message';
+
+    /**
+     * @var string
+     */
+    public const FIELD_LOCATIONS = 'locations';
+
+    /**
+     * @var string
+     */
+    public const FIELD_PATH = 'path';
+
+    /**
+     * @var string
+     */
+    public const FIELD_EXTENSIONS = 'extensions';
 
     /**
      * For all errors that reflect the internal state of the application
@@ -47,9 +64,9 @@ class GraphQLException extends \Exception implements GraphQLExceptionInterface
     protected string $original;
 
     /**
-     * @var CollectionInterface|string[]|int[]
+     * @var array|string[]|int[]
      */
-    protected CollectionInterface $path;
+    protected array $path = [];
 
     /**
      * @var bool
@@ -70,53 +87,62 @@ class GraphQLException extends \Exception implements GraphQLExceptionInterface
         $this->setLocations();
         $this->setExtensions();
 
-        $this->path = new Set('scalar');
-
-        if ($prev instanceof \Throwable) {
-            $prev = $this->lookup($prev);
-        }
-
         parent::__construct(static::INTERNAL_EXCEPTION_MESSAGE, $code, $prev);
     }
 
     /**
-     * @param \Throwable $exception
-     * @return \Throwable
+     * @return \Throwable|null
      */
-    private function lookup(\Throwable $exception): \Throwable
+    public function getException(): ?\Throwable
     {
+        $exception = $this;
+
         while ($exception->getPrevious()) {
             $exception = $exception->getPrevious();
 
-            if ($exception instanceof GraphQLExceptionInterface) {
+            if (! $exception instanceof GraphQLErrorInterface) {
                 return $exception;
             }
         }
 
-        return $exception;
+        return null;
+    }
+
+    /**
+     * @param \Throwable $e
+     * @return static
+     */
+    public static function fromThrowable(\Throwable $e): self
+    {
+        return new static($e->getMessage(), $e->getCode(), $e);
+    }
+
+    /**
+     * @param string $message
+     * @param array|SourceLocationInterface[] $locations
+     * @param array|string[]|int[] $path
+     * @param \Throwable|null $prev
+     * @return static
+     */
+    public static function create(
+        string $message = '',
+        array $locations = [],
+        array $path = [],
+        \Throwable $prev = null
+    ): self {
+        $instance = new static($message, 0, $prev);
+        $instance->setLocations($locations);
+        $instance->path = $path;
+
+        return $instance;
     }
 
     /**
      * @return string
      */
-    public function __toString(): string
+    final public function __toString(): string
     {
         return parent::__toString();
-    }
-
-    /**
-     * @param string $message
-     * @param array $path
-     * @param array $locations
-     * @return static|GraphQLExceptionInterface
-     */
-    public static function new(string $message, array $path = [], array $locations = []): self
-    {
-        $instance = new static($message);
-        $instance->path = new Set('scalar', $path);
-        $instance->locations = new LocationsCollection($locations);
-
-        return $instance;
     }
 
     /**
@@ -128,9 +154,9 @@ class GraphQLException extends \Exception implements GraphQLExceptionInterface
     }
 
     /**
-     * @return GraphQLExceptionInterface
+     * @return GraphQLErrorInterface
      */
-    public function publish(): GraphQLExceptionInterface
+    public function publish(): GraphQLErrorInterface
     {
         $this->public = true;
         $this->message = $this->original;
@@ -139,9 +165,9 @@ class GraphQLException extends \Exception implements GraphQLExceptionInterface
     }
 
     /**
-     * @return GraphQLExceptionInterface
+     * @return GraphQLErrorInterface
      */
-    public function hide(): GraphQLExceptionInterface
+    public function hide(): GraphQLErrorInterface
     {
         $this->public = false;
         $this->message = static::INTERNAL_EXCEPTION_MESSAGE;
@@ -168,18 +194,23 @@ class GraphQLException extends \Exception implements GraphQLExceptionInterface
      */
     public function toArray(): array
     {
-        return [
+        $result = $this->mapToArray([
             static::FIELD_MESSAGE    => $this->getMessage(),
-            static::FIELD_LOCATIONS  => $this->getLocations()->toArray(),
-            static::FIELD_PATH       => $this->getPath()->toArray(),
-            static::FIELD_EXTENSIONS => $this->getExtensions(),
-        ];
+            static::FIELD_LOCATIONS  => $this->getLocations(),
+            static::FIELD_PATH       => $this->getPath(),
+        ]);
+
+        if ($this->extensions !== []) {
+            $result[static::FIELD_EXTENSIONS] = $this->getExtensions();
+        }
+
+        return $result;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getPath(): CollectionInterface
+    public function getPath(): array
     {
         return $this->path;
     }

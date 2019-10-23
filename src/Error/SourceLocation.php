@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of Railt package.
  *
@@ -7,14 +8,15 @@
  */
 declare(strict_types=1);
 
-namespace Railt\Http\Exception\Location;
+namespace Railt\Http\Error;
 
 use Railt\Http\Common\RenderableTrait;
+use Railt\Contracts\Http\Error\SourceLocationInterface;
 
 /**
  * Class Location
  */
-final class Location implements LocationInterface
+final class SourceLocation implements SourceLocationInterface
 {
     use RenderableTrait;
 
